@@ -2,6 +2,8 @@
 #include<iomanip>
 using namespace std;
 const int MAXVEX=100;
+const int INFINITY=65535;
+const int MAXEDGE=20;
 
 struct MGraph
 {
@@ -9,6 +11,9 @@ struct MGraph
     int arc[MAXVEX][MAXVEX];//邻接矩阵
     int numNodes,numEdges;
 };
+typedef int Patharc[MAXVEX];
+typedef int ShortPathTable[MAXVEX];
+
 
 void CreateMGraph(MGraph* &G)
 {
@@ -25,7 +30,7 @@ void CreateMGraph(MGraph* &G)
     {
         for(j=0;j<G->numNodes;j++)
         {
-            G->arc[i][j]=65535;
+            G->arc[i][j]=INFINITY;
         }
     }
     for(k=0;k<G->numEdges;k++)
@@ -51,10 +56,48 @@ void ShowGraph(MGraph *G)
     }
 }
 
+void ShortestPath_Dijkstra(MGraph *G,int v0,Patharc *P,ShortPathTable *D)
+{
+    int v,w,k,min;
+    int final[MAXVEX];
+    for(v=0;v<G->numNodes;v++)
+    {
+        final[v]=0;
+        (*D)[v]=G->arc[v0][v];
+        (*P)[v]=-1;
+    }
+    (*D)[v0]=0;
+    final[v0]=1;
+    for(v=1;v<G->numNodes;v++)
+    {
+        min=INFINITY;
+        for(w=0;w<G->numNodes;w++)
+        {
+            if(!final[w]&&(*D)[w]<min)
+            {
+                k=w;
+                min=(*D)[w];
+            }
+        }
+        final[k]=1;
+        for(w=0;w<G->numNodes;w++)
+        {
+            if(!final[w]&&(min+G->arc[k][w]<(*D)[w]))
+            {
+                (*D)[w]=min+G->arc[k][w];
+                (*P)[w]=k;
+            }
+        }
+    }
+}
+
 int main()
 {
+    Patharc*P;
+    ShortPathTable *D;
     MGraph *Graph=new MGraph;
-    CreateMGraph(Graph);//4 4 a b c d 0 1 1 0 3 1 1 2 1 2 3 1
-    ShowGraph(Graph);
+    CreateMGraph(Graph);//4 4 a b c d 0 1 1 0 2 1 1 3 2 2 3 3
+    //ShowGraph(Graph);
+    ShortestPath_Dijkstra(Graph,0,P,D);
     return 0;
 }

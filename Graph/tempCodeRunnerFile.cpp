@@ -1,2 +1,1 @@
-for(i=0;i<k;i++)
-        cout<<edges[i].begin<<" "<<edges[i].end<<" "<<edges[i].weigh<<endl;
+4 4 a b c d 0 1 1 0 2 1 1 3 2 2 3 3
