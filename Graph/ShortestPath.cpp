@@ -56,48 +56,79 @@ void ShowGraph(MGraph *G)
     }
 }
 
-void ShortestPath_Dijkstra(MGraph *G,int v0,Patharc *P,ShortPathTable *D)
+void ShortestPath_Dijkstra(MGraph *G,int v0,int *P,int *D)
 {
     int v,w,k,min;
     int final[MAXVEX];
     for(v=0;v<G->numNodes;v++)
     {
         final[v]=0;
-        (*D)[v]=G->arc[v0][v];
-        (*P)[v]=-1;
+        D[v]=G->arc[v0][v];
+        P[v]=-1;
     }
-    (*D)[v0]=0;
+    D[v0]=0;
     final[v0]=1;
     for(v=1;v<G->numNodes;v++)
     {
         min=INFINITY;
         for(w=0;w<G->numNodes;w++)
         {
-            if(!final[w]&&(*D)[w]<min)
+            if(!final[w]&&D[w]<min)
             {
                 k=w;
-                min=(*D)[w];
+                min=D[w];
             }
         }
         final[k]=1;
         for(w=0;w<G->numNodes;w++)
         {
-            if(!final[w]&&(min+G->arc[k][w]<(*D)[w]))
+            if(!final[w]&&(min+G->arc[k][w]<D[w]))
             {
-                (*D)[w]=min+G->arc[k][w];
-                (*P)[w]=k;
+                D[w]=min+G->arc[k][w];
+                P[w]=k;
             }
         }
     }
 }
 
+void ShortestPath_Floyd(MGraph *G,int (*P)[MAXVEX],int (*D)[MAXVEX])
+{
+    int v, w,k;
+    for(v=0;v<G->numNodes;v++)
+    {
+        for(w=0;w<G->numNodes;w++)
+        {
+            D[v][w]=G->arc[v][w];
+            P[v][w]=w;
+        }
+    }
+
+    for(k=0;k<G->numNodes;k++)
+    {
+        for(v=0;v<G->numNodes;v++)
+    {
+        for(w=0;w<G->numNodes;w++)
+        {
+            if(D[v][w]>D[v][k]+D[k][w])
+            {
+                D[v][w]=D[v][k]+D[k][w];
+                P[v][w]=P[v][k];
+            }
+        }
+    }
+    }
+}
+
+
 int main()
 {
-    Patharc*P;
-    ShortPathTable *D;
+    int (*P)[MAXVEX]=new int [MAXVEX][MAXVEX];
+    int (*D)[MAXVEX]=new int [MAXVEX][MAXVEX];
     MGraph *Graph=new MGraph;
     CreateMGraph(Graph);//4 4 a b c d 0 1 1 0 2 1 1 3 2 2 3 3
     //ShowGraph(Graph);
-    ShortestPath_Dijkstra(Graph,0,P,D);
+    //ShortestPath_Dijkstra(Graph,0,P,D);
+    ShortestPath_Floyd(Graph,P,D);
+    cout<<*(*P+3);
     return 0;
 }
