@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.vue": "vue",
-        "*.wpy": "vue",
-        "*.wxml": "html",
-        "*.wxss": "css",
-        "string_view": "cpp"
-    }
-}
